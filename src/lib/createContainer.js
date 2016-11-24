@@ -89,6 +89,23 @@ module.exports = function (Component, options) {
 				return Component;
 			}
 		},
+		getInitialState: function () {
+			if (!Object.keys(Container.fragments).length) {
+				return {};
+			}
+			// data queried on server-side will pass to Container as prop
+			// Container will lose those props when props from parent changed
+			// and shouldContainerUpdate return false
+			// So, We should store those props as state.
+			var props = this.props;
+			var state = {};
+			Object.keys(props).forEach(function (key){
+				if (Container.fragments.hasOwnProperty(key)){
+					state[key] = props[key];
+				}
+			});
+			return state;
+		},
 		componentDidMount: function () {
 			// Keep track of the mounted state manually, because the official isMounted() method
 			// returns true when using renderToString() from react-dom/server.
